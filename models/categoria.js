@@ -5,10 +5,6 @@ const CategoriaSchema = Schema({
         type: String,
         required: [true, 'El nombre es obligatorio']
     },
-    proveedor: {
-        type: String,
-        required: [true, 'El proveedor es obligatorio'],
-    },
     
     descripcion: {
         type: String,
