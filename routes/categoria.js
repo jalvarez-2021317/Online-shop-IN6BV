@@ -1,17 +1,44 @@
 const { Router } = require('express');
-const { getCategoria,postCategoria,putCategoria,deleteCategoria } = require('../controllers/categoria');
+const { check } = require('express-validator');
+
+const { existeCategoriaPorId } = require('../helpers/db-validators');
+
+// Middlewares
+const { validarCampos } = require('../middlewares/validar-campos');
+const { validarJWT } = require('../middlewares/validar-jwt');
+
+//Controllers
+const { obtenerCategorias, obtenerCategoriaPorId, crearCategoria, actualizarCategoria, eliminarCategoria } = require('../controllers/categoria');
 
 const router = Router();
 
+// Obtener todas las categorias - publico
+router.get('/', obtenerCategorias);
 
-router.get('/ver', getCategoria);
+// Obtener una categoria por el id - publico
+router.get('/:id', [
+    check('id', 'No es un id de mongo valido').isMongoId(),
+    check('id').custom( existeCategoriaPorId ),
+    validarCampos
+],obtenerCategoriaPorId);
 
-router.post('/agregar', postCategoria);
+// Crear Categoria - privado - cualquier persona con un token valido
+router.post('/agregar', [
+    validarJWT,
+    check('nombre', 'El nombre de la categoria es obligatorio').not().isEmpty(),
+    validarCampos
+], crearCategoria);
 
-router.put('/editar/:id', putCategoria);
+// Actualizar Categoria - privado - se requiere id y un token valido
+router.put('/editar/:id', [
+    validarJWT,
+    check('id', 'No es un id de mongo valido').isMongoId(),
+    check('id').custom( existeCategoriaPorId ),
+    check('nombre', 'El nombre de la categoria es obligatorio').not().isEmpty(),
+    validarCampos
+], actualizarCategoria);
 
-router.delete('/eliminar/:id', deleteCategoria);
-
-
+// Borrar una categoria - privado - se requiere id y un token valido - solo el admin puede borrar
+router.delete('/eliminar/:id', eliminarCategoria);
 
 module.exports = router;
