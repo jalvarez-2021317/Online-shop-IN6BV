@@ -47,7 +47,7 @@ const putUsuario = async (req = request, res = response) => {
     const { id } = req.params;
 
     //Ignoramos el _id, rol, estado y google al momento de editar y mandar la petición en el req.body
-    const { _id, rol, estado, google, ...resto } = req.body;
+    const { _id, rol, estado, ...resto } = req.body;
 
     // //Encriptar password
     const salt = bcryptjs.genSaltSync();
@@ -69,12 +69,12 @@ const deleteUsuario = async (req = request, res = response) => {
     const { id } = req.params;
 
     //eliminar fisicamente y guardar
-    const usuarioEliminado = await Usuario.findByIdAndDelete(id);
+    //const usuarioEliminado = await Usuario.findByIdAndDelete(id);
 
     // O bien cambiando el estado del usuario
 
     //editar y guardar
-    //const usuarioEliminado = await Usuario.findByIdAndUpdate(id, { estado: false });
+    const usuarioEliminado = await Usuario.findByIdAndUpdate(id, { estado: false });
 
     res.json({
         msg: 'DELETE API de usuario',

@@ -10,7 +10,7 @@ class Server {
         this.app = express();
         this.port = process.env.PORT;
         this.paths = {
-           // auth: '/api/auth',
+           auth: '/api/auth',
             usuario: '/api/usuarios',
             categoria: '/api/categorias'
         }
@@ -48,7 +48,7 @@ class Server {
 
 
     routes(){
-        //this.app.use( this.paths.auth , require('../routes/auth') );
+        this.app.use( this.paths.auth , require('../routes/auth') );
         this.app.use( this.paths.categoria, require('../routes/categoria'));
         this.app.use( this.paths.usuario , require('../routes/usuario') );
     }
