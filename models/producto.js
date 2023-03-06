@@ -5,15 +5,11 @@ const ProductoSchema = Schema({
         type: String,
         required: [true, 'El nombre es obligatorio']
     },
-    Proveedor: {
+    proveedor: {
         type: String,
         required: [true, 'El Proveedor es obligatorio'],
     },
     stock: {
-        type: Number,
-        required: [true, 'El Stock es obligatorio']
-    },
-    estado: {
         type: Boolean,
         default: true
     },

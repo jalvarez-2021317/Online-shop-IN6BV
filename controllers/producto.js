@@ -6,15 +6,14 @@ const Producto = require('../models/producto');
 const obtenerProductos = async (req = request, res = response) => {
 
     //Condición, me busca solo los categorias que tengan estado en true
-    const query = { estado: true };
+    const query = { stock: true };
 
     const listaProductos = await Promise.all([
         Producto.countDocuments(query),
-        Producto.find(query).populate('usuario', 'nombre')
     ]);
 
     res.json({
-        msg: 'GET API de usuarios',
+        msg: 'GET API de Productos',
         listaProductos: listaProductos
     });
 
