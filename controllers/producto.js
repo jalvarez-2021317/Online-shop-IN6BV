@@ -15,7 +15,7 @@ const obtenerProductos = async (req = request, res = response) => {
     ]);
 
     res.json({
-        msg: 'GET API de usuarios',
+        msg: 'GET API de Producto',
         listaProductos
     });
 
@@ -26,10 +26,9 @@ const obtenerProductoPorId = async (req = request, res = response) => {
 
     const { id } = req.params;
     const producto = await Producto.findById(id)
-        .populate('usuario', 'nombre');
 
     res.json({
-        msg: 'categoria por id',
+        msg: 'Producto por id',
         producto: producto
     });
 
@@ -48,7 +47,7 @@ const crearProducto = async (req = request, res = response) => {
     await productoDB.save();
 
     res.status(201).json({
-        msg: 'Post de categoria',
+        msg: 'Post de Producto',
         productoDB
     });
 
@@ -67,20 +66,22 @@ const actualizarProducto = async (req = request, res = response) => {
     const productoEditado = await Producto.findByIdAndUpdate(id, resto);
 
     res.json({
-        msg: 'PUT API de usuario',
+        msg: 'PUT API de Prodcuto',
       productoEditado
     });
 
 }
 
 
-const eliminarProducto = (req = request, res = response) => {
+const eliminarProducto = async (req = request, res = response) => {
 
     const { id } = req.params;
 
+    const productoEliminado = await Producto.findByIdAndUpdate(id, { stock: false });
+
     res.json({
-        msg: 'delete categoria',
-        id
+        msg: 'delete Producto',
+        productoEliminado
     });
 
 }
