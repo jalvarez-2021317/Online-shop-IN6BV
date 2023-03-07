@@ -3,7 +3,7 @@ const { check } = require('express-validator');
 const { obtenerFactura, obtenerFacturaPorId, crearFactura, actualizarFactura, eliminarFactura } = require('../controllers/factura');
 
 
-const {  existeProductoPorId } = require('../helpers/db-validators');
+const {  existeProductoPorId, existeFacturaPorId } = require('../helpers/db-validators');
 
 // Middlewares
 const { validarCampos } = require('../middlewares/validar-campos');
@@ -32,8 +32,7 @@ router.post('/agregar', [
 router.put('/editar/:id', [
     validarJWT,
     check('id', 'No es un id de mongo valido').isMongoId(),
-    check('id').custom( existeProductoPorId ),
-    check('nombre', 'El nombre del Producto es obligatorio').not().isEmpty(),
+    check('id').custom( existeFacturaPorId ),
     validarCampos
 ], actualizarFactura);
 

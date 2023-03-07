@@ -53,7 +53,28 @@ const login = async( req = request, res = response ) => {
 
 }
 
+const registrarUsuario = async (req, res) => {
+    try {
+      const { nombre, correo, password } = req.body;
+      const usuarioExistente = await Usuario.findOne({ correo });
+  
+      if (usuarioExistente) {
+        return res.status(400).json({ mensaje: 'Este correo electrónico ya está registrado' });
+      }
+  
+      // Si el usuario no existe, lo creamos con el rol de "cliente"
+      const nuevoUsuario = new Usuario({ nombre, correo, password, rol: 'CLIENTE_ROL' });
+      await nuevoUsuario.save();
+  
+      res.status(201).json({ mensaje: 'Usuario registrado exitosamente' });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ mensaje: 'Ocurrió un error al registrar el usuario' });
+    }
+  };
+
 
 module.exports = {
-    login
+    login,
+    registrarUsuario
 }

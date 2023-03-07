@@ -18,6 +18,10 @@ const ProductoSchema = Schema({
         type: Boolean,
         default: true
     },
+    popular: {
+        type: Boolean,
+        default: true
+    },
 });
 
 module.exports = model('Producto', ProductoSchema)
