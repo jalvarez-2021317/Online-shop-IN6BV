@@ -10,12 +10,13 @@ const obtenerProductos = async (req = request, res = response) => {
 
     const listaProductos = await Promise.all([
         Producto.countDocuments(query),
-        Producto.find(query).populate('usuario', 'nombre')
+        Producto.find(query)
+        
     ]);
 
     res.json({
         msg: 'GET API de usuarios',
-        listaProductos: listaProductos
+        listaProductos
     });
 
 

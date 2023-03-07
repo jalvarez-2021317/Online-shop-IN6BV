@@ -2,7 +2,7 @@ const { Router } = require('express');
 const { check } = require('express-validator');
 
 
-const { existeCategoriaPorId } = require('../helpers/db-validators');
+const {  existeProductoPorId } = require('../helpers/db-validators');
 
 // Middlewares
 const { validarCampos } = require('../middlewares/validar-campos');
@@ -18,7 +18,7 @@ router.get('/', obtenerProductos);
 // Obtener una categoria por el id - publico
 router.get('/:id', [
     check('id', 'No es un id de mongo valido').isMongoId(),
-    check('id').custom( existeCategoriaPorId ),
+    check('id').custom( existeProductoPorId ),
     validarCampos
 ],obtenerProductoPorId);
 
@@ -33,7 +33,7 @@ router.post('/agregar', [
 router.put('/editar/:id', [
     validarJWT,
     check('id', 'No es un id de mongo valido').isMongoId(),
-    check('id').custom( existeCategoriaPorId ),
+    check('id').custom( existeProductoPorId ),
     check('nombre', 'El nombre del Producto es obligatorio').not().isEmpty(),
     validarCampos
 ], actualizarProducto);
