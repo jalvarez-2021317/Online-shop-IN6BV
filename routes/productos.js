@@ -13,7 +13,7 @@ const { obtenerProductoPorId, obtenerProductos, crearProducto, actualizarProduct
 const router = Router();
 
 // Obtener todas las categorias - publico
-router.get('/M', obtenerProductos);
+router.get('/', obtenerProductos);
 
 // Obtener una categoria por el id - publico
 router.get('/:id', [
@@ -25,7 +25,7 @@ router.get('/:id', [
 // Crear Categoria - privado - cualquier persona con un token valido
 router.post('/agregar', [
     validarJWT,
-    check('nombre', 'El nombre de la categoria es obligatorio').not().isEmpty(),
+    check('nombre', 'El nombre del Producto es obligatorio').not().isEmpty(),
     validarCampos
 ], crearProducto);
 
@@ -34,7 +34,7 @@ router.put('/editar/:id', [
     validarJWT,
     check('id', 'No es un id de mongo valido').isMongoId(),
     check('id').custom( existeCategoriaPorId ),
-    check('nombre', 'El nombre de la categoria es obligatorio').not().isEmpty(),
+    check('nombre', 'El nombre del Producto es obligatorio').not().isEmpty(),
     validarCampos
 ], actualizarProducto);
 

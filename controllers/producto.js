@@ -10,10 +10,11 @@ const obtenerProductos = async (req = request, res = response) => {
 
     const listaProductos = await Promise.all([
         Producto.countDocuments(query),
+        Producto.find(query).populate('usuario', 'nombre')
     ]);
 
     res.json({
-        msg: 'GET API de Productos',
+        msg: 'GET API de usuarios',
         listaProductos: listaProductos
     });
 
@@ -36,29 +37,18 @@ const obtenerProductoPorId = async (req = request, res = response) => {
 
 const crearProducto = async (req = request, res = response) => {
 
-    const nombre = req.body.nombre.toUpperCase();
+    const { nombre, proveedor,categoria } = req.body;
+    const productoDB = new Producto({ nombre, proveedor,categoria });
 
     //Validación para encontar una cateroia por nombre en la DB
-    const productoDB = await Producto.findOne({ nombre });
-    if (productoDB) {
-        return res.status(400).json({
-            msg: `La categoria ${productoDB.nombre}, ya existe en la DB`
-        });
-    }
-
     //Generar la data a guardar
-    const data = {
-        nombre,
-        usuario: req.usuario._id
-    }
 
-    const producto = new Producto(data);
     //Guardar en DB
-    await producto.save();
+    await productoDB.save();
 
     res.status(201).json({
         msg: 'Post de categoria',
-        categoria: producto
+        productoDB
     });
 
 }
@@ -67,17 +57,17 @@ const crearProducto = async (req = request, res = response) => {
 const actualizarProducto = async (req = request, res = response) => {
 
     const { id } = req.params;
-    const { _id, estado, usuario, ...data } = req.body;
 
-    data.nombre = data.nombre.toUpperCase(); //cambiamos el nombre todo a mayusculas
-    data.usuario = req.usuario._id; //hacemos referencia al usuario que hizo el put por medio del token
+    //Ignoramos el _id, rol, estado y google al momento de editar y mandar la petición en el req.body
+    const { _id, stock, ...resto } = req.body;
 
-    //Edición de categoria                                         // new: true Sirve para enviar el nuevo documento actualizado     
-    const producto = await Producto.findByIdAndUpdate(id, data, { new: true });
+
+    //editar y guardar
+    const productoEditado = await Producto.findByIdAndUpdate(id, resto);
 
     res.json({
-        msg: 'Put de categoria',
-        categoria: producto
+        msg: 'PUT API de usuario',
+      productoEditado
     });
 
 }
