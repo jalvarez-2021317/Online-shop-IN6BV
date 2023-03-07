@@ -1,25 +1,21 @@
 const { Schema, model } = require('mongoose');
 const facturaSchema = Schema({
     usuario: {
-      type: Schema.Types.ObjectId,
-      ref: 'Usuario',
-      required: [true, 'El id del usuario es obligatorio']
+        type: Schema.Types.ObjectId,
+        ref: 'Usuario',
+        required: [true, 'El id del usuario es obligatorio']
     },
     productos: [{
-      producto: {
-        type: Schema.Types.ObjectId,
-        ref: 'Producto',
-        required: [true, 'el id del producto es obligatorio']
-      },
-      cantidad: {
-        type: Number,
-        required: [true, 'La cantidad es obligatoria']
-      }
+        producto: {
+            type: Schema.Types.ObjectId,
+            ref: 'Producto',
+           //required: [true, 'el id del producto es obligatorio']
+        }
     }],
     fecha: {
-      type: Date,
-      default: Date.now
+        type: Date,
+        default: Date.now
     }
-  });
-  
-  module.exports = model('Factura', facturaSchema);
+});
+
+module.exports = model('Factura', facturaSchema);

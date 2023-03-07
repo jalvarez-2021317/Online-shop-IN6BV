@@ -16,7 +16,7 @@ const UsuarioSchema = Schema({
     },
     rol: {
         type: String,
-        default :"USER_ROL"
+        default :"CLIENTE_ROL"
     },
     estado: {
         type: Boolean,
