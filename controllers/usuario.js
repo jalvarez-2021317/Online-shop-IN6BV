@@ -65,21 +65,31 @@ const putUsuario = async (req = request, res = response) => {
 
 
 const deleteUsuario = async (req = request, res = response) => {
-
-    const { id } = req.params;
-
     //eliminar fisicamente y guardar
     //const usuarioEliminado = await Usuario.findByIdAndDelete(id);
 
     // O bien cambiando el estado del usuario
 
     //editar y guardar
-    const usuarioEliminado = await Usuario.findByIdAndUpdate(id, { estado: false });
-
-    res.json({
-        msg: 'DELETE API de usuario',
-        usuarioEliminado
-    });
+    try {
+        const usuarioActual = req.user; // Obtener el usuario actual autenticado
+        const idUsuario = req.params.id; // Obtener el ID del usuario que se desea eliminar
+    
+        // Verificar si el usuario actual es un admin o es el mismo usuario que se desea eliminar
+        if (usuarioActual.rol === 'admin' || usuarioActual._id.toString() === idUsuario) {
+          const usuarioEliminado = await Usuario.findByIdAndDelete(idUsuario);
+          if (usuarioEliminado) {
+            res.status(200).send({ mensaje: 'Usuario eliminado exitosamente' });
+          } else {
+            res.status(404).send({ error: 'Usuario no encontrado' });
+          }
+        } else {
+          res.status(403).send({ error: 'No tiene permisos para realizar esta acción' });
+        }
+      } catch (error) {
+        console.log(error);
+        res.status(500).send({ error: 'Error al eliminar usuario' });
+      }
 
 }
 

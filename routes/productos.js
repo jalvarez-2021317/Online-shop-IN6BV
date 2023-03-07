@@ -9,11 +9,15 @@ const { validarCampos } = require('../middlewares/validar-campos');
 const { validarJWT } = require('../middlewares/validar-jwt');
 
 //Controllers
-const { obtenerProductoPorId, obtenerProductos, crearProducto, actualizarProducto, eliminarProducto } = require('../controllers/producto');
+const { obtenerProductoPorId, obtenerProductos, crearProducto, actualizarProducto, eliminarProducto, obtenerProductosMasVendidos, obtenerProductosAgotados } = require('../controllers/producto');
 const router = Router();
 
 // Obtener todas las categorias - publico
 router.get('/', obtenerProductos);
+
+router.get('/popular', obtenerProductosMasVendidos);
+
+router.get('/agotados', obtenerProductosAgotados);
 
 // Obtener una categoria por el id - publico
 router.get('/:id', [

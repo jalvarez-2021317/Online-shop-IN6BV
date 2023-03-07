@@ -2,15 +2,51 @@
 const { response, request } = require('express');
 //Modelos
 const Producto = require('../models/producto');
+const Categoria = require('../models/categoria');
+
 
 const obtenerProductos = async (req = request, res = response) => {
 
     //Condición, me busca solo los categorias que tengan estado en true
     const query = { stock: true };
-
     const listaProductos = await Promise.all([
         Producto.countDocuments(query),
-        Producto.find(query)
+        Producto.find(query).populate({ path: 'Categoria', select: 'nombre' })
+        
+    ]);
+
+    res.json({
+        msg: 'GET API de Producto',
+        listaProductos
+    });
+
+
+}
+
+const obtenerProductosAgotados = async (req = request, res = response) => {
+
+    //Condición, me busca solo los categorias que tengan estado en true
+    const query = { stock: false };
+    const listaProductos = await Promise.all([
+        Producto.countDocuments(query),
+        Producto.find(query).populate({ path: 'Categoria', select: 'nombre' })
+        
+    ]);
+
+    res.json({
+        msg: 'GET API de Producto',
+        listaProductos
+    });
+
+
+}
+const obtenerProductosMasVendidos = async (req = request, res = response) => {
+
+    //Condición, me busca solo los categorias que tengan estado en true
+    const query = { popular: true };
+    const listaProductos = await Promise.all([
+        Producto.countDocuments(query),
+        Producto.find(query).populate({ path: 'Categoria', select: 'nombre' })
         
     ]);
 
@@ -89,6 +125,8 @@ const eliminarProducto = async (req = request, res = response) => {
 
 
 module.exports = {
+    obtenerProductosAgotados,
+    obtenerProductosMasVendidos,
     obtenerProductos,
     obtenerProductoPorId,
     crearProducto,

@@ -9,10 +9,11 @@ const ProductoSchema = Schema({
         type: String,
         required: [true, 'El Proveedor es obligatorio'],
     },
-    categoria: {
+    Categoria: {
         type: Schema.Types.ObjectId,
-        ref: 'categoria',
-        required: true
+        ref: 'Categoria',
+        required: true ,
+        default:"6407aaeca76e4ac982ce8d05"
     }, 
     stock: {
         type: Boolean,
