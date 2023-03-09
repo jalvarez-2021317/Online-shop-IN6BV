@@ -9,7 +9,7 @@ const facturaSchema = Schema({
         producto: {
             type: Schema.Types.ObjectId,
             ref: 'Producto',
-           //required: [true, 'el id del producto es obligatorio']
+           required: [true, 'el id del producto es obligatorio']
         }
     }],
     fecha: {

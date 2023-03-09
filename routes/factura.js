@@ -3,11 +3,12 @@ const { check } = require('express-validator');
 const { obtenerFactura, obtenerFacturaPorId, crearFactura, actualizarFactura, eliminarFactura } = require('../controllers/factura');
 
 
-const {  existeProductoPorId, existeFacturaPorId } = require('../helpers/db-validators');
+const {  existeProductoPorId, existeFacturaPorId, validarStock } = require('../helpers/db-validators');
 
 // Middlewares
 const { validarCampos } = require('../middlewares/validar-campos');
 const { validarJWT } = require('../middlewares/validar-jwt');
+const { validarProducto, validarUsuarioProducto } = require('../middlewares/validar-productos');
 
 //Controllers
 const router = Router();
@@ -25,7 +26,8 @@ router.get('/:id', [
 // Crear Categoria - privado - cualquier persona con un token valido
 router.post('/agregar', [
     validarJWT,
-    validarCampos
+    //validarStock,
+    //validarCampos
 ], crearFactura);
 
 // Actualizar Categoria - privado - se requiere id y un token valido

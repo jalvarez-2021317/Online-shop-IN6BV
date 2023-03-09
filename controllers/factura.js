@@ -2,6 +2,8 @@
 const { response, request } = require('express');
 //Modelos
 const Factura = require('../models/factura');
+const Producto = require('../models/producto');
+const Usuario = require('../models/usuario');
 
 const obtenerFactura = async (req = request, res = response) => {
     try {
@@ -28,51 +30,119 @@ const obtenerFacturaPorId = async (req = request, res = response) => {
 
 const crearFactura = async (req = request, res = response) => {
 
-//     const { usuario, productos } = req.body;
-  
-//   // Crea un objeto de factura y guarda en la base de datos
-//   const factura = new Factura({
-//     usuario: usuario,
-//     productos: productos.map(p => ({ producto: p.productoId })),
-//   });
-//   await factura.save();
-
-//   res.json(factura);
-
-
-  const data = {
+  try {
+    const factura = new Factura({
+      usuario: req.body.usuario,
+      productos: req.body.productos,
+    });
     
-    usuario: req.usuario._id,
-    productos: req.body
-}
+    // Buscar los productos por sus IDs
+    const productos = await Producto.find({
+      _id: { $in: factura.productos.map(producto => producto.producto) }
+    });
 
-const producto = new Factura(data);
-//Guardar en DB
-await producto.save();
+    const usuario = await Usuario.findById(factura.usuario);
+    if (!usuario) {
+      return res.status(400).json({ mensaje: 'El usuario no existe.' });
+    }
 
-res.status(201).json({
-    msg: 'Post de categoria',
-     producto
-});
+    // Verificar si se encontraron todos los productos
+    if (productos.length !== factura.productos.length) {
+      return res.status(400).json({ mensaje: 'No se encontraron todos los productos.' });
+    }
+
+    // Asignar los productos encontrados a la factura
+    factura.productos = factura.productos.map(producto => {
+      return {
+        producto: productos.find(p => p._id.toString() === producto.producto.toString()),
+      };
+    });
+
+    // Guardar la nueva factura en la base de datos
+    await factura.save();
+
+    res.json(factura);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ mensaje: 'Hubo un error al crear la factura.' });
+  }
+
+  
 }
 
 const actualizarFactura = async (req = request, res = response) => {
 
+  try {
     const { id } = req.params;
+    const factura = await Factura.findById(id);
 
-    //Ignoramos el _id, rol, estado y google al momento de editar y mandar la petición en el req.body
-    const { usuario, fecha, ...resto } = req.body;
+    if (!factura) {
+      return res.status(404).json({ mensaje: 'La factura no existe.' });
+    }
 
+    factura.usuario = req.body.usuario;
+    factura.productos = req.body.productos;
 
-    //editar y guardar
-    const facturaEditada = await Factura.findByIdAndUpdate(id, resto);
-
-    res.json({
-        msg: 'PUT API de Facturas',
-       facturaEditada
+    const productos = await Producto.find({
+      _id: { $in: factura.productos.map(producto => producto.producto) }
     });
 
+    // Verificar si se encontraron todos los productos
+    if (productos.length !== factura.productos.length) {
+      return res.status(400).json({ mensaje: 'No se encontraron todos los productos.' });
+    }
+
+    // Verificar si el usuario existe
+    const usuario = await Usuario.findById(factura.usuario);
+    if (!usuario) {
+      return res.status(400).json({ mensaje: 'El usuario no existe.' });
+    }
+
+    // Verificar si los productos existen
+    for (const producto of factura.productos) {
+      const encontrado = productos.find(p => p._id.toString() === producto.producto.toString());
+      if (!encontrado) {
+        return res.status(400).json({ mensaje: `El producto ${producto.producto} no existe.` });
+      }
+    }
+
+    // Asignar los productos encontrados a la factura
+    factura.productos = factura.productos.map(producto => {
+      return {
+        producto: productos.find(p => p._id.toString() === producto.producto.toString()),
+      };
+    });
+
+    // Guardar la factura actualizada en la base de datos
+    await factura.save();
+
+    res.json(factura);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ mensaje: 'Hubo un error al actualizar la factura.' });
+  }
+
 }
+
+const obtenerFacturasPorUsuario = async (req = request, res = response) => {
+  try {
+    const { id } = req.params;
+
+    // Buscar las facturas por el ID del usuario
+    const facturas = await Factura.find({ usuario: id });
+
+    // Verificar si se encontraron facturas
+    if (!facturas || facturas.length === 0) {
+      return res.status(404).json({ mensaje: 'No se encontraron facturas para este usuario.' });
+    }
+
+    res.json(facturas);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ mensaje: 'Hubo un error al obtener las facturas del usuario.' });
+  }
+}
+
 
 const eliminarFactura= async (req = request, res = response) => {
 
@@ -94,6 +164,7 @@ const eliminarFactura= async (req = request, res = response) => {
 
 
 module.exports = {
+    obtenerFacturasPorUsuario,
     obtenerFactura,
     obtenerFacturaPorId,
     crearFactura,

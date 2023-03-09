@@ -3,6 +3,7 @@ const Categoria = require('../models/categoria');
 const Role = require('../models/role');
 const Producto = require('../models/producto');
 const Factura = require('../models/factura');
+const { model } = require('mongoose');
 
 //Validamos en contro de la db si ese correo ya existe
 const emailExiste = async( correo = '' ) => {
@@ -62,8 +63,21 @@ const existeFacturaPorId = async( id ) => {
 
 }
 
+const validarStock = async (req, res, next) => {
+    const { id} = req.body;
+    const producto = await Producto.findById(id);
+    if (!producto) {
+      return res.status(404).json({ message: 'Producto no encontrado' });
+    }
+    if (!producto.stock) {
+      return res.status(400).json({ message: 'El producto está agotado' });
+    }
+    next();
+  };
+  
 
 module.exports = {
+    validarStock,
     emailExiste,
     esRoleValido,
     existeFacturaPorId,
