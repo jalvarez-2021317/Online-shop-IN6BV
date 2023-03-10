@@ -73,10 +73,10 @@ const obtenerProductoPorId = async (req = request, res = response) => {
 
 const crearProducto = async (req = request, res = response) => {
 
-    const { nombre, proveedor,categoria } = req.body;
-    const productoDB = new Producto({ nombre, proveedor,categoria });
+    const { nombre, proveedor, categoria, cantidad, precio } = req.body;
+    const productoDB = new Producto({ nombre, proveedor, categoria, cantidad, precio });
 
-    //Validación para encontar una cateroia por nombre en la DB
+    //Validación para encontrar una categoria por nombre en la DB
     //Generar la data a guardar
 
     //Guardar en DB
@@ -88,6 +88,7 @@ const crearProducto = async (req = request, res = response) => {
     });
 
 }
+
 
 
 const actualizarProducto = async (req = request, res = response) => {
