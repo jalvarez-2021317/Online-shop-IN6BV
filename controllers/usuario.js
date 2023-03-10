@@ -64,34 +64,63 @@ const putUsuario = async (req = request, res = response) => {
 }
 
 
-const deleteUsuario = async (req = request, res = response) => {
-    //eliminar fisicamente y guardar
-    //const usuarioEliminado = await Usuario.findByIdAndDelete(id);
+const deleteUsuario = async (req, res) => {
+  const id = req.params.id;
+  const uid = req.uid; // id del usuario que hace la petición
 
-    // O bien cambiando el estado del usuario
+  try {
+    // Buscamos el usuario que se quiere borrar
+    const usuarioDB = await Usuario.findById(id);
+    if (!usuarioDB) {
+      return res.status(404).json({
+        ok: false,
+        msg: "No existe un usuario con ese id",
+      });
+    }
 
-    //editar y guardar
-    try {
-        const usuarioActual = req.user; // Obtener el usuario actual autenticado
-        const idUsuario = req.params.id; // Obtener el ID del usuario que se desea eliminar
-    
-        // Verificar si el usuario actual es un admin o es el mismo usuario que se desea eliminar
-        if (usuarioActual.rol === 'admin' || usuarioActual._id.toString() === idUsuario) {
-          const usuarioEliminado = await Usuario.findByIdAndDelete(idUsuario);
-          if (usuarioEliminado) {
-            res.status(200).send({ mensaje: 'Usuario eliminado exitosamente' });
-          } else {
-            res.status(404).send({ error: 'Usuario no encontrado' });
-          }
-        } else {
-          res.status(403).send({ error: 'No tiene permisos para realizar esta acción' });
-        }
-      } catch (error) {
-        console.log(error);
-        res.status(500).send({ error: 'Error al eliminar usuario' });
+    // Si el usuario que hace la petición es cliente
+    if (req.rol === "CLIENTE_ROL") {
+      // Solo puede borrar su propio usuario
+      if (uid !== id) {
+        return res.status(403).json({
+          ok: false,
+          msg: "No tiene privilegios para borrar este usuario",
+        });
       }
+    }
+    // Si el usuario que hace la petición es admin
+    else if (req.rol === "ADMIN_ROL") {
+      // Si el usuario que se quiere borrar es un admin
+      if (usuarioDB.rol === "ADMIN_ROL") {
+        // Solo puede ser borrado por otro admin
+        if (uid !== id) {
+          return res.status(403).json({
+            ok: false,
+            msg: "No tiene privilegios para borrar este usuario",
+          });
+        }
+      }
+    }
 
-}
+    // Si se llega hasta aquí es porque el usuario que hace la petición
+    // tiene los privilegios necesarios para borrar el usuario que se quiere borrar
+
+    // Borramos el usuario
+    await Usuario.findByIdAndDelete(id);
+
+    res.json({
+      ok: true,
+      msg: "Usuario borrado correctamente",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      msg: "Error al borrar el usuario",
+    });
+  }
+};
+
 
 
 
