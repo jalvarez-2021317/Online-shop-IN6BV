@@ -1,4 +1,5 @@
 const { Schema, model } = require('mongoose');
+const Categoria = require('../models/categoria');
 
 const ProductoSchema = Schema({
     nombre: {
@@ -12,7 +13,6 @@ const ProductoSchema = Schema({
     categoria: {
       type: Schema.Types.ObjectId,
       ref: 'Categoria',
-      required: true,
       default: '6407aaeca76e4ac982ce8d05'
     },
     stock: {

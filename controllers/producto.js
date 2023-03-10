@@ -11,7 +11,7 @@ const obtenerProductos = async (req = request, res = response) => {
     const query = { stock: true };
     const listaProductos = await Promise.all([
         Producto.countDocuments(query),
-        Producto.find(query).populate({ path: 'Categoria', select: 'nombre' })
+        Producto.find(query)
         
     ]);
 
@@ -29,7 +29,7 @@ const obtenerProductosAgotados = async (req = request, res = response) => {
     const query = { stock: false };
     const listaProductos = await Promise.all([
         Producto.countDocuments(query),
-        Producto.find(query).populate({ path: 'Categoria', select: 'nombre' })
+        Producto.find(query)
         
     ]);
 
@@ -46,7 +46,7 @@ const obtenerProductosMasVendidos = async (req = request, res = response) => {
     const query = { popular: true };
     const listaProductos = await Promise.all([
         Producto.countDocuments(query),
-        Producto.find(query).populate({ path: 'Categoria', select: 'nombre' })
+        Producto.find(query)
         
     ]);
 
