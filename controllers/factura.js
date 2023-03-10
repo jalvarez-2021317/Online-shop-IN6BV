@@ -29,7 +29,6 @@ const obtenerFacturaPorId = async (req = request, res = response) => {
 }
 
 const crearFactura = async (req = request, res = response) => {
-
   try {
     const factura = new Factura({
       usuario: req.body.usuario,
@@ -51,12 +50,19 @@ const crearFactura = async (req = request, res = response) => {
       return res.status(400).json({ mensaje: 'No se encontraron todos los productos.' });
     }
 
-    // Asignar los productos encontrados a la factura
+    // Asignar los productos encontrados a la factura y calcular el total
+    let total = 0;
     factura.productos = factura.productos.map(producto => {
+      const prod = productos.find(p => p._id.toString() === producto.producto.toString());
+      total += producto.cantidad * prod.precio;
       return {
-        producto: productos.find(p => p._id.toString() === producto.producto.toString()),
+        producto: prod,
+        cantidad: producto.cantidad,
+        precio: prod.precio
       };
     });
+
+    factura.total = total;
 
     // Guardar la nueva factura en la base de datos
     await factura.save();
@@ -71,7 +77,6 @@ const crearFactura = async (req = request, res = response) => {
 }
 
 const actualizarFactura = async (req = request, res = response) => {
-
   try {
     const { id } = req.params;
     const factura = await Factura.findById(id);
@@ -108,10 +113,19 @@ const actualizarFactura = async (req = request, res = response) => {
 
     // Asignar los productos encontrados a la factura
     factura.productos = factura.productos.map(producto => {
+      const encontrado = productos.find(p => p._id.toString() === producto.producto.toString());
       return {
-        producto: productos.find(p => p._id.toString() === producto.producto.toString()),
+        producto: encontrado,
+        cantidad: producto.cantidad,
+        precio: encontrado.precio,
       };
     });
+
+    // Calcular el total de la factura
+    const total = factura.productos.reduce((sum, producto) => {
+      return sum + producto.cantidad * producto.precio;
+    }, 0);
+    factura.total = total;
 
     // Guardar la factura actualizada en la base de datos
     await factura.save();
@@ -121,7 +135,6 @@ const actualizarFactura = async (req = request, res = response) => {
     console.log(error);
     res.status(500).json({ mensaje: 'Hubo un error al actualizar la factura.' });
   }
-
 }
 
 const obtenerFacturasPorUsuario = async (req = request, res = response) => {
