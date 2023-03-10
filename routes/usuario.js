@@ -3,6 +3,7 @@ const { Router } = require('express');
 const { check } = require('express-validator');
 
 const { getUsuarios, postUsuario, putUsuario, deleteUsuario } = require('../controllers/usuario');
+const { obtenerFacturasPorUsuario } = require('../controllers/factura')
 const { emailExiste, esRoleValido, existeUsuarioPorId } = require('../helpers/db-validators');
 const { validarCampos } = require('../middlewares/validar-campos');
 const { validarJWT } = require('../middlewares/validar-jwt');
@@ -11,6 +12,8 @@ const { validarJWT } = require('../middlewares/validar-jwt');
 const router = Router();
 
 router.get('/mostrar', getUsuarios);
+
+router.get('/Facturas/:id', obtenerFacturasPorUsuario)
 
 router.post('/agregar', [
     check('nombre', 'El nombre es obligatorio para el post').not().isEmpty(),
